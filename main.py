@@ -241,11 +241,11 @@ class ZenMoodApp(ctk.CTk):
         # Spacer untuk mendorong tombol Keluar ke bawah
         ctk.CTkLabel(self.sidebar, text="").pack(fill="both", expand=True)
 
-        btn_logout = ctk.CTkButton(self.sidebar, text="Keluar", command=self.logout, 
+        self.btn_logout = ctk.CTkButton(self.sidebar, text="Keluar", command=self.logout, 
                                    fg_color=self.theme["btn_hover"], text_color="white", 
                                    hover_color=self.theme["btn"], height=50, 
                                    font=("Arial", 12, "bold"), corner_radius=15)
-        btn_logout.pack(fill="x", padx=30, pady=20)
+        self.btn_logout.pack(fill="x", padx=30, pady=20)
         
         # B. CONTENT AREA
         self.content_area = ctk.CTkFrame(self.main_container, fg_color="transparent") # Di-set warna awal di sini
