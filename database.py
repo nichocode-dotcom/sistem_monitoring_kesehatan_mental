@@ -13,13 +13,10 @@ class DatabaseManager:
         self.cursor.execute("CREATE TABLE IF NOT EXISTS master_user (id_user INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT)")
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS master_emosi (
             id_emosi INTEGER PRIMARY KEY AUTOINCREMENT, nama TEXT, ikon TEXT, skor INTEGER)""")
-        # self.cursor.execute("""CREATE TABLE IF NOT EXISTS master_aktivitas (
-        #     id_aktivitas INTEGER PRIMARY KEY AUTOINCREMENT, nama TEXT, kategori TEXT)""")
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS master_habit (
             id_habit INTEGER PRIMARY KEY AUTOINCREMENT, nama TEXT, target_harian TEXT)""")
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS master_template (
             id_template INTEGER PRIMARY KEY AUTOINCREMENT, pertanyaan TEXT)""")
-        
         self.cursor.execute("""CREATE TABLE IF NOT EXISTS master_quotes (
             id_quote INTEGER PRIMARY KEY AUTOINCREMENT, 
             isi TEXT, 
@@ -73,13 +70,29 @@ class DatabaseManager:
             #              ('Main Sosmed', 'Hiburan'), ('Bertengkar', 'Sosial'), ('Jalan-jalan', 'Hiburan')]
             # self.cursor.executemany("INSERT INTO master_aktivitas (nama, kategori) VALUES (?,?)", aktivitas)
 
-            habits = [('Minum Air 2L', '2 Liter'), ('Meditasi', '10 Menit'), ('Tidur < Jam 11', '8 Jam'), 
+            habits = [('Minum Air 2L', '2 Liter'), ('Meditasi', '10 Menit'), ('Waktu Tidur', '7-8 Jam'), 
                      ('Baca Buku', '15 Menit'), ('Jogging Pagi', '30 Menit'),
-                     ('Makan Buah', '1 Porsi'), ('No Sosmed', '1 Jam'), ('Skincare', 'Malam')]
+                     ('Makan Buah', '1 Porsi'), ('Makan Sayur', '1 Porsi'), ('Minum Susu', '1-2 Gelas'), ('No Sosmed', '1 Jam'), ('Skincare', 'Malam')]
             self.cursor.executemany("INSERT INTO master_habit (nama, target_harian) VALUES (?,?)", habits)
 
-            templates = [('Apa yang kamu syukuri hari ini?',), ('Apa hal berat yang berhasil kamu lewati?',), 
-                        ('Bagaimana perasaanmu saat bangun tidur?',)]
+            templates = [
+                ('Apa yang kamu syukuri hari ini?',), 
+                ('Apa hal berat yang berhasil kamu lewati?',), 
+                ('Bagaimana perasaanmu saat bangun tidur?',),  # <--- Dulu lupa koma disini
+                ('Ceritakan momen menyenangkan yang kamu alami hari ini.',),
+                ('Apa tantangan terbesar yang kamu hadapi hari ini?',), 
+                ('Siapa orang yang membuat harimu lebih baik?',), # <--- Dulu lupa koma disini
+                ('Apa hal kecil yang membuatmu tersenyum hari ini?',), 
+                ('Bagaimana kamu merawat dirimu sendiri hari ini?',),
+                ('Apa tujuan utama yang ingin kamu capai minggu ini?',), 
+                ('Ceritakan sesuatu yang baru yang kamu pelajari hari ini.',),
+                ('Apa yang bisa kamu lakukan besok untuk membuat harimu lebih baik?',), 
+                ('Bagaimana kamu mengatasi stres hari ini?',),
+                ('Apa hal positif yang bisa kamu ambil dari pengalaman sulit hari ini?',), 
+                ('Ceritakan tentang momen kebahagiaan sederhana yang kamu alami.',),
+                ('Apa satu hal yang ingin kamu ubah tentang rutinitas harianmu?',)
+            ]
+            
             self.cursor.executemany("INSERT INTO master_template (pertanyaan) VALUES (?)", templates)
 
             quotes = [
@@ -218,7 +231,7 @@ class SmartJournal(FiturKesehatan):
 
     def get_jurnal_harian(self, id_user):
         tgl = datetime.now().strftime("%Y-%m-%d")
-        self.cursor.execute("SELECT judul, isi_teks FROM trans_jurnal WHERE tanggal=? AND id_user=? ORDER BY id DESC LIMIT 7", 
+        self.cursor.execute("SELECT judul, isi_teks FROM trans_jurnal WHERE tanggal=? AND id_user=? ORDER BY id DESC", 
                            (tgl, id_user))
         return self.cursor.fetchall()
 

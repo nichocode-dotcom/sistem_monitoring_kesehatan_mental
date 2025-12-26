@@ -3,49 +3,44 @@ from datetime import datetime
 from tkinter import messagebox
 from database import MoodTracker, SmartJournal, HabitManager, AnalyticsDashboard
 
-# --- [KONFIGURASI TEMA] ---
-
 MOOD_THEMES = {
     "Marah (Zen Forest)": {
         "bg": "#E8F8F5", "sidebar": "#148F77", "card": "#FFFFFF", 
         "text": "#148F77", "btn": "#48C9B0", "btn_hover": "#1ABC9C",
-        "description": "warna hijau ini hadir sebagai ruang napas untuk meredam gemuruh di hatimu, mengajakmu pulang ke ketenangan alam saat energimu berada di titik terendah."
+        "description": "Warna hijau ini hadir sebagai ruang napas untuk meredam gemuruh di hatimu, mengajakmu pulang ke ketenangan alam saat energimu berada di titik terendah."
     },
     "Cemas (Serenity Blue)": {
         "bg": "#EBF5FB", "sidebar": "#2874A6", "card": "#FFFFFF", 
         "text": "#2874A6", "btn": "#5DADE2", "btn_hover": "#3498DB",
-        "description": "biru ini adalah jangkar bagi pikiranmu yang berisik, memberikan rasa aman dan stabilitas untuk menenangkan jiwamu yang sedang dilanda ketidakpastian."
+        "description": "Biru ini adalah jangkar bagi pikiranmu yang berisik, memberikan rasa aman dan stabilitas untuk menenangkan jiwamu yang sedang dilanda ketidakpastian."
     },
     "Morning Mist (Gray)": { 
         "bg": "#F8F9F9", "sidebar": "#455A64", "card": "#FFFFFF", 
-        "text": "#37474F", "btn": "#CFD8DC", "btn_hover": "#B0BEC5",
-        "description": "warna merah muda yang lembut ini adalah simbol kasih sayang untuk dirimu sendiri, meyakinkanmu bahwa setiap luka sedang berproses menjadi kekuatan baru yang lebih indah."
+        "text": "#37474F", "btn": "#9BA9B0", "btn_hover": "#7F9096",
+        "description": "Warna merah muda yang lembut ini adalah simbol kasih sayang untuk dirimu sendiri, meyakinkanmu bahwa setiap luka sedang berproses menjadi kekuatan baru yang lebih indah."
     },
     "Sedih (Warm Sunset)": {
         "bg": "#FEF5E7", "sidebar": "#AF601A", "card": "#FFFFFF", 
         "text": "#AF601A", "btn": "#F39C12", "btn_hover": "#D68910",
-        "description": "warna jingga yang hangat ini adalah pelukan visual yang meyakinkanmu bahwa di balik rasa lelah dan sedih, selalu ada harapan baru yang akan terbit esok hari."
+        "description": "Warna jingga yang hangat ini adalah pelukan visual yang meyakinkanmu bahwa di balik rasa lelah dan sedih, selalu ada harapan baru yang akan terbit esok hari."
     },
     "Pulih (Healing Rose)": {
         "bg": "#FFF0F5", "sidebar": "#DB7093", "card": "#FFFFFF",    
         "text": "#C71585", "btn": "#FFB6C1", "btn_hover": "#FF69B4",
-        "description": "warna merah muda yang lembut ini adalah simbol kasih sayang untuk dirimu sendiri, meyakinkanmu bahwa setiap luka sedang berproses menjadi kekuatan baru yang lebih indah."
+        "description": "Warna merah muda yang lembut ini adalah simbol kasih sayang untuk dirimu sendiri, meyakinkanmu bahwa setiap luka sedang berproses menjadi kekuatan baru yang lebih indah."
     },
     "Senang (Joyful Berry)": {
-        "bg": "#F5EEF8", "sidebar": "#D7BDE2", "card": "#FFFFFF", 
-        "text": "#633974", "btn": "#AF7AC5", "btn_hover": "#9B59B6",
-        "description": "ungu berry yang ceria ini adalah perayaan atas cahaya di dalam dirimu, memancarkan energi kreatif dan kepuasan karena kamu telah berhasil merawat dirimu dengan baik."
+        "bg": "#F5EEF8", "sidebar": "#9B59B6", "card": "#FFFFFF", 
+        "text": "#633974", "btn": "#BF98CF", "btn_hover": "#B587C9",
+        "description": "Ungu berry yang ceria ini adalah perayaan atas cahaya di dalam dirimu, memancarkan energi kreatif dan kepuasan karena kamu telah berhasil merawat dirimu dengan baik."
     }
 }
 class ZenMoodApp(ctk.CTk):
-    
-    # ================= 1. INISIALISASI =================
     def __init__(self):
         super().__init__() 
         self.title("ZenMood - Personal Mental Health Tracker")
         self.after(0, lambda: self.state('zoomed'))
-
-        # Inisialisasi Logika Database
+        
         self.logic_dash = AnalyticsDashboard()
         self.logic_journal = SmartJournal()
         self.logic_mood = MoodTracker()
@@ -74,8 +69,6 @@ class ZenMoodApp(ctk.CTk):
         else:
             current_battery = 0 
 
-     
-          # 2. Logika Penentuan Tema (gunakan key singkat)
         if current_battery == 0:
             theme_key = "Morning Mist (Gray)"
         elif current_battery <= 20: 
@@ -232,23 +225,24 @@ class ZenMoodApp(ctk.CTk):
         for text, cmd in menu_items:
             # Menggunakan warna btn_hover dari tema agar serasi
             btn = ctk.CTkButton(self.sidebar, text=text, corner_radius=15, command=cmd, 
-                                fg_color=self.theme["btn_hover"], 
+                                font=("Century Gothic", 14, "bold"),
+                                fg_color=self.theme["btn"], 
                                 text_color="white", anchor="w", height=50, 
-                                hover_color=self.theme["btn"])
+                                hover_color=self.theme["btn_hover"])
             btn.pack(fill="x", padx=30, pady=5)
             self.nav_buttons.append(btn)  # Simpan referensi tombol
 
         # Spacer untuk mendorong tombol Keluar ke bawah
         ctk.CTkLabel(self.sidebar, text="").pack(fill="both", expand=True)
 
-        self.btn_logout = ctk.CTkButton(self.sidebar, text="Keluar", command=self.logout, 
-                                   fg_color=self.theme["btn_hover"], text_color="white", 
-                                   hover_color=self.theme["btn"], height=50, 
+        self.btn_logout = ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, 
+                                   fg_color=self.theme["btn"], text_color="white", 
+                                   hover_color=self.theme["btn_hover"], height=50, 
                                    font=("Arial", 12, "bold"), corner_radius=15)
         self.btn_logout.pack(fill="x", padx=30, pady=20)
         
         # B. CONTENT AREA
-        self.content_area = ctk.CTkFrame(self.main_container, fg_color="transparent") # Di-set warna awal di sini
+        self.content_area = ctk.CTkFrame(self.main_container, fg_color="transparent")
         self.content_area.pack(side="right", fill="both", expand=True, padx=30, pady=20)
         
         # [PENTING] Panggil ini TERAKHIR agar semua warna tombol ter-update sesuai tema saat ini
@@ -275,13 +269,20 @@ class ZenMoodApp(ctk.CTk):
                      text_color="white").pack(anchor="w")
         
         ctk.CTkLabel(salam_frame, text="Selamat datang di ZenMood, semoga harimu menyenangkan!", 
-                     font=("Century Gothic", 13), 
+                     font=("Century Gothic", 14), 
                      text_color="white").pack(anchor="w")
         
+        date_container = ctk.CTkFrame(header_bingkai, fg_color="transparent")
+        date_container.pack(side="right", padx=25, pady=10)
+        
+        ctk.CTkLabel(date_container, text=f"📅",
+                     font=("Segoe UI Emoji", 24),
+                     text_color="white").pack(side="left", padx=(0,8), pady=(0,3))
+        
         tgl_str = datetime.now().strftime("%A, %d %B %Y")
-        ctk.CTkLabel(header_bingkai, text=tgl_str, 
+        ctk.CTkLabel(date_container, text=tgl_str, 
                      font=("Century Gothic", 14, "bold"), 
-                     text_color="white").pack(side="right", padx=25)
+                     text_color="white").pack(side="left", padx=0)
 
         # --- [B. BAGIAN TENGAH: STATISTIK (FULL FILL)] ---
         # Menggunakan expand=True agar container ini mengambil sisa ruang yang ada
@@ -328,7 +329,7 @@ class ZenMoodApp(ctk.CTk):
         card_hab = ctk.CTkFrame(left_column, fg_color=self.theme["btn"], corner_radius=25)
         card_hab.pack(fill="both", expand=True, ipady=10)
 
-        ctk.CTkLabel(card_hab, text="✅ Progres Pencapain  Habit Anda Hari Ini!", 
+        ctk.CTkLabel(card_hab, text="✅ Progres Pencapaian Habit Anda Hari Ini!", 
                      font=("Arial", 15, "bold"), text_color="white").pack(padx=25, pady=(15, 5), anchor="w")
         
         ctk.CTkLabel(card_hab, text=f"{done_habit} dari {total_habit} Selesai", 
@@ -347,40 +348,72 @@ class ZenMoodApp(ctk.CTk):
         ctk.CTkLabel(card_jur, text="📝 Jurnal Terbaru", 
                      font=("Arial", 16, "bold"), text_color=self.theme["text"]).pack(padx=25, pady=(20,10), anchor="w")
 
+        # [PERBAIKAN] Buat Scrollable Frame DULUAN di sini (agar variabelnya dikenali di blok else/except)
+        journal_scroll = ctk.CTkScrollableFrame(card_jur, fg_color="transparent")
+        journal_scroll.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+
         try:
             res_jurnal = self.logic_journal.get_jurnal_harian(self.current_user_id) 
+            
             if res_jurnal:
-                
-                journal_scroll = ctk.CTkScrollableFrame(card_jur, fg_color="transparent")
-                journal_scroll.pack(fill="both", expand=True, padx=20, pady=(0, 20))
-        
                 for idx, jurnal in enumerate(res_jurnal):
-                    # Frame untuk setiap jurnal
+                    # Frame Kartu Jurnal
                     preview_frame = ctk.CTkFrame(journal_scroll, fg_color="#F9F9F9", corner_radius=15)
                     preview_frame.pack(fill="x", pady=(0, 10), padx=5)
                     
-                    # Judul dengan nomor
-                    judul_text = jurnal[0] if jurnal[0] else "Tanpa Judul"
-                    if len(judul_text) > 40:  # Potong judul jika terlalu panjang
-                        judul_text = judul_text[:40] + "..."
-                    ctk.CTkLabel(preview_frame, text=f"{idx+1}. {judul_text}", 
-                                font=("Arial", 12, "bold"), text_color=self.theme["text"]).pack(anchor="w", padx=15, pady=(10, 5))
-                    
-                    # Preview teks
-                    if jurnal[1]:
-                        
-                        if len(jurnal[1]) > 50:  # Jika lebih dari 120 karakter
-                            txt_preview = jurnal[1][:50] + '...'  # Potong di 120
-                        else:
-                            txt_preview = jurnal[1] 
-                        ctk.CTkLabel(preview_frame, text=txt_preview, font=("Arial", 10), 
-                                    text_color=self.theme["text"], wraplength=380, justify="left").pack(anchor="w", padx=15, pady=(0, 10))
-            else:
-                ctk.CTkLabel(card_jur, text="Belum ada cerita hari ini.", 
-                            font=("Arial", 12, "italic"), text_color=self.theme["text"]).pack(expand=True)
-        except:
-            ctk.CTkLabel(card_jur, text="Data jurnal tidak tersedia.", text_color=self.theme["text"]).pack(expand=True)
+                    # --- HEADER BARIS ---
+                    top_row = ctk.CTkFrame(preview_frame, fg_color="transparent")
+                    top_row.pack(fill="x", padx=15, pady=(15, 5))
 
+                    judul_text = jurnal[0] if jurnal[0] else "Tanpa Judul"
+                    if len(judul_text) > 25: judul_text = judul_text[:25] + "..."
+                    
+                    ctk.CTkLabel(top_row, text=f"{idx+1}. {judul_text}", 
+                                 font=("Arial", 12, "bold"), 
+                                 text_color=self.theme["text"]).pack(side="left")
+
+                    # --- TOMBOL LIHAT ---
+                    btn_lihat = ctk.CTkFrame(top_row, fg_color=self.theme["btn_hover"], corner_radius=15, cursor="hand2", width=80, height=30) 
+                    btn_lihat.pack(side="right")
+                    btn_lihat.pack_propagate(False)
+
+                    def on_click_lihat(event, j=jurnal):
+                        self.tampilkan_detail_inline(j)
+
+                    content_frame = ctk.CTkFrame(btn_lihat, fg_color="transparent")
+                    content_frame.place(relx=0.5, rely=0.5, anchor="center")
+
+                    icon_lbl = ctk.CTkLabel(content_frame, text="👁️", font=("Segoe UI Emoji", 12), text_color="white")
+                    icon_lbl.pack(side="left", padx=(0, 3)) 
+                    text_lbl = ctk.CTkLabel(content_frame, text="Lihat", font=("Arial", 11, "bold"), text_color="white")
+                    text_lbl.pack(side="left")
+
+                    # Hover Logic
+                    def make_hover(btn_target):
+                        def on_enter(e): btn_target.configure(fg_color=self.theme["btn"]) 
+                        def on_leave(e): btn_target.configure(fg_color=self.theme["btn_hover"])
+                        return on_enter, on_leave
+
+                    enter_func, leave_func = make_hover(btn_lihat)
+                    widgets_to_bind = [btn_lihat, content_frame, icon_lbl, text_lbl]
+                    for w in widgets_to_bind:
+                        w.bind("<Button-1>", on_click_lihat)
+                        w.bind("<Enter>", enter_func)
+                        w.bind("<Leave>", leave_func)
+
+                    # Preview Teks
+                    if jurnal[1]:
+                        txt_preview = (jurnal[1][:60] + '...') if len(jurnal[1]) > 60 else jurnal[1]
+                        ctk.CTkLabel(preview_frame, text=txt_preview, font=("Arial", 10), 
+                                     text_color="grey", wraplength=280, justify="left").pack(anchor="w", padx=15, pady=(0, 15))
+            else:
+                # [SUKSES] Sekarang ini aman karena journal_scroll sudah ada
+                ctk.CTkLabel(journal_scroll, text="Belum ada cerita hari ini.", 
+                             font=("Arial", 12, "italic"), text_color="grey").pack(pady=50)
+        except Exception as e:
+            print(f"DEBUG ERROR: {e}")
+            # [SUKSES] Ini juga aman
+            ctk.CTkLabel(journal_scroll, text="Gagal memuat data.").pack(pady=50)
         
         card_q = ctk.CTkFrame(self.content_area, fg_color=self.theme["card"], corner_radius=25)
         card_q.pack(fill="x", pady=20, ipady=10)
@@ -394,21 +427,26 @@ class ZenMoodApp(ctk.CTk):
             quote_text = "Tetap melangkah, hari ini milikmu."
             quote_author = "ZenMood"
 
-        ctk.CTkLabel(card_q, text=f'"{quote_text}"', font=("Century Gothic", 16, "italic"), 
+        ctk.CTkLabel(card_q, text=f'"{quote_text}"', font=("Century Gothic", 16), 
                     text_color=self.theme["text"], wraplength=800).pack(padx=20, pady=(30, 5))
         ctk.CTkLabel(card_q, text=f"— {quote_author}", font=("Arial", 13, "bold"), text_color=self.theme["text"]).pack(pady=(0, 15))
     # ================= 6. FITUR: MOOD TRACKER =================
     def show_mood(self):
         self.clear_content_frame()
         
-        # Header
-        tgl_str = datetime.now().strftime("%A, %d %B %Y")
         header_frame = ctk.CTkFrame(self.content_area, fg_color="transparent")
-        header_frame.pack(fill="x", pady=(0, 20))
+        header_frame.pack(fill="x", pady=(0, 10))
         
-        ctk.CTkLabel(header_frame, text="Bagaimana Perasaanmu?", font=("Century Gothic", 26, "bold"), 
-                     text_color=self.theme["text"]).pack(anchor="w")
-        ctk.CTkLabel(header_frame, text=f"{tgl_str} — Selamat Mengisi.", font=("Arial", 12), text_color=self.theme["text"]).pack(anchor="w")
+        date_container = ctk.CTkFrame(header_frame, fg_color="transparent")
+        date_container.pack(side="right", padx=25, pady=10)
+        
+        ctk.CTkLabel(header_frame, text="Bagaimana Perasaan Anda hari ini?", font=("Century Gothic", 26, "bold"), text_color=self.theme["text"]).pack(anchor="w")
+        ctk.CTkLabel(header_frame, text="Semoga kamu baik-baik saja ya, aku yakin semuanya bisa terhandle dengan baik.", font=("Century Gothic", 14), text_color=self.theme["text"]).pack(anchor="w")
+        
+        ctk.CTkLabel(date_container, text=f"📅", font=("Segoe UI Emoji", 24), text_color=self.theme["text"]).pack(side="left", padx=(0,8), pady=(0,3))
+        
+        tgl_str = datetime.now().strftime("%A, %d %B %Y")
+        ctk.CTkLabel(date_container, text=tgl_str, font=("Arial", 12, "bold"), text_color=self.theme["text"]).pack(side="right", pady=10)
 
         # Container
         card = ctk.CTkFrame(self.content_area, fg_color=self.theme["card"], corner_radius=25)
@@ -430,9 +468,9 @@ class ZenMoodApp(ctk.CTk):
 
         data_emosi = self.logic_mood.get_daftar_emosi() 
         for idx, (eid, nama, ikon, skor) in enumerate(data_emosi):
-            btn = ctk.CTkButton(emosi_grid, text=f"{ikon}\n{nama}", font=("Arial", 14), 
-                                fg_color="transparent", border_color=self.theme["btn"], border_width=2,
-                                text_color=self.theme["text"], corner_radius=15, height=80, width=150, hover_color=self.theme["btn"])
+            btn = ctk.CTkButton(emosi_grid, text=f"{ikon}\n{nama}", font=("Arial", 15, "bold"), 
+                                fg_color="#F9F9F9", border_color=self.theme["btn"], border_width=2,
+                                text_color=self.theme["text"], corner_radius=15, height=80, width=150, hover_color=self.theme["btn_hover"])
             btn.configure(command=lambda i=eid, b=btn: select_mood_visual(i, b))
             btn.grid(row=idx//3, column=idx%3, padx=10, pady=10, sticky="ew")
             emosi_grid.grid_columnconfigure(idx%3, weight=1)
@@ -440,12 +478,12 @@ class ZenMoodApp(ctk.CTk):
 
         # Input Aktivitas
         ctk.CTkLabel(card, text="Apa aktivitas utamamu?", font=("Arial", 14, "bold"), text_color=self.theme["text"]).pack(anchor="w", pady=(30, 10), padx=20)
-        self.ent_aktivitas = ctk.CTkEntry(card, height=50, placeholder_text="Ceritakan singkat aktivitasmu...", font=("Arial", 13), corner_radius=15)
+        self.ent_aktivitas = ctk.CTkEntry(card, height=50, placeholder_text="Ceritakan singkat aktivitasmu...", font=("Arial", 13), text_color=self.theme["text"], border_width=2, border_color=self.theme["btn"], fg_color="#F9F9F9", corner_radius=15)
         self.ent_aktivitas.pack(fill="x", padx=20)
 
         # Tombol Simpan
-        ctk.CTkButton(card, text="SIMPAN", command=self.simpan_mood_action, 
-                      fg_color=self.theme["text"], hover_color=self.theme["btn_hover"], 
+        ctk.CTkButton(card, text="SIMPAN", command=self.simpan_mood_action, text_color="white",
+                      fg_color=self.theme["btn_hover"], hover_color=self.theme["btn"], 
                       height=50, font=("Century Gothic", 14, "bold"), corner_radius=25).pack(pady=(30, 10), padx=20)
 
     def simpan_mood_action(self):
@@ -453,22 +491,69 @@ class ZenMoodApp(ctk.CTk):
             messagebox.showwarning("Info", "Pilih emosi dulu!")
             return
         msg = self.logic_mood.simpan_mood(self.current_user_id, self.var_emosi.get(), self.ent_aktivitas.get())
-        # messagebox.showinfo("Sukses", msg)
         self.refresh_app_state()
         self.apply_current_theme()
         self.show_dashboard()
 
     # ================= 7. FITUR: JURNAL =================
-    def show_jurnal(self):
+    
+    
+    
+    def tampilkan_detail_jurnal_dashboard(self, jurnal_data):
+        """Wrapper untuk menampilkan detail jurnal dari dashboard"""
+        self.tampilkan_detail_inline(jurnal_data)   
+        
+        
+        
+    def tampilkan_detail_inline(self, jurnal_data):
+        """Tampilkan detail jurnal langsung di area konten"""
+        judul, isi = jurnal_data
+        
+        # 1. Bersihkan content area
+        for widget in self.content_area.winfo_children():
+            widget.destroy()
+            
+        # 2. Buat frame untuk detail jurnal
+        detail_frame = ctk.CTkFrame(self.content_area, fg_color="transparent")
+        detail_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # --- ISI KONTEN DETAIL ---
+        # Header Detail
+        header = ctk.CTkFrame(detail_frame, fg_color=self.theme["sidebar"], corner_radius=35)
+        header.pack(fill="x", pady=(0, 15))
+        
+        ctk.CTkLabel(header, text=judul if judul else "Tanpa Judul", corner_radius=15,
+                    font=("Arial", 16, "bold"), text_color="white").pack(side="left", padx=20, pady=15)
+        
+        # Tombol Kembali ke Dashboard
+        ctk.CTkButton(header, text="← Kembali", text_color="white", font=("Arial", 12, "bold"), corner_radius=35, width=50, fg_color=self.theme["btn_hover"], hover_color=self.theme["btn"]  
+                      , command=self.show_dashboard).pack(side="right", padx=50)
+        
+        # Area Teks
+        text_area = ctk.CTkTextbox(detail_frame, text_color=self.theme["text"] ,font=("Arial", 13), fg_color= self.theme["card"], corner_radius=35,)
+        text_area.pack(fill="both", expand=True)
+        text_area.insert("1.0", isi)
+        text_area.configure(state="disabled") # Agar tidak bisa diedit
+            
+       
+    
+    def show_jurnal(self): 
         self.clear_content_frame()
         
         # 1. Header & Tanggal
-        tgl_str = datetime.now().strftime("%A, %d %B %Y")
         header_frame = ctk.CTkFrame(self.content_area, fg_color="transparent")
         header_frame.pack(fill="x", pady=(0, 10))
         
-        ctk.CTkLabel(header_frame, text="Ruang Bercerita", font=("Century Gothic", 26, "bold"), text_color=self.theme["text"]).pack(side="left")
-        ctk.CTkLabel(header_frame, text=tgl_str, font=("Arial", 12, "bold"), text_color=self.theme["text"]).pack(side="right", pady=10)
+        date_container = ctk.CTkFrame(header_frame, fg_color="transparent")
+        date_container.pack(side="right", padx=25, pady=10)
+        
+        ctk.CTkLabel(header_frame, text="Ruang Bercerita", font=("Century Gothic", 26, "bold"), text_color=self.theme["text"]).pack(anchor="w")
+        ctk.CTkLabel(header_frame, text="Silahkan sampaikan semua keluh kesahmu disini, tidak perlu khawatir ZenMood siap mendengarkan kok.", font=("Century Gothic", 14), text_color=self.theme["text"]).pack(anchor="w")
+        
+        ctk.CTkLabel(date_container, text=f"📅", font=("Segoe UI Emoji", 24), text_color=self.theme["text"]).pack(side="left", padx=(0,8), pady=(0,3))
+        
+        tgl_str = datetime.now().strftime("%A, %d %B %Y")
+        ctk.CTkLabel(date_container, text=tgl_str, font=("Arial", 12, "bold"), text_color=self.theme["text"]).pack(side="right", pady=10)
 
         # 2. Container Utama (Card)
         card = ctk.CTkFrame(self.content_area, fg_color=self.theme["card"], corner_radius=20)
@@ -485,14 +570,14 @@ class ZenMoodApp(ctk.CTk):
         
         # Tombol Ganti dengan warna tema
         ctk.CTkButton(prompt_frame, text="🔄 Ganti", width=60, height=25, 
-                      fg_color=self.theme["text"], text_color="white", 
-                      font=("Arial", 11, "bold"), hover_color=self.theme["btn_hover"],
+                      fg_color=self.theme["btn_hover"], text_color="white",
+                      font=("Arial", 11, "bold"), hover_color=self.theme["btn"],
                       command=lambda: self.lbl_prompt.configure(text=f"💡 {self.logic_journal.get_prompt_acak()}")).pack(side="right", padx=10)
 
         # --- B. Input Judul ---
         self.ent_judul = ctk.CTkEntry(card, placeholder_text="Beri judul cerita hari ini...", 
-                                      height=45, font=("Arial", 14, "bold"), 
-                                      border_width=0, fg_color="#F9F9F9", corner_radius=10)
+                                      height=45, font=("Arial", 14, "bold"), text_color=self.theme["text"],
+                                      border_width=2, border_color=self.theme["btn"], fg_color="#F9F9F9", corner_radius=10)
         self.ent_judul.pack(fill="x", padx=20, pady=(5, 10))
 
         # --- C. Rating Bintang (Presisi) ---
@@ -520,55 +605,83 @@ class ZenMoodApp(ctk.CTk):
             self.star_buttons.append(btn)
 
         # --- D. Text Area (Isi Catatan) ---
-        self.txt_isi = ctk.CTkTextbox(card, font=("Arial", 13), fg_color="#FAFAFA", 
-                                      border_width=2, border_color="#EEEEEE", corner_radius=10)
+        self.txt_isi = ctk.CTkTextbox(card,  font=("Arial", 13), fg_color="#FAFAFA", text_color=self.theme["text"],
+                                      border_width=2, border_color=self.theme["btn"], corner_radius=10)
         self.txt_isi.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        placeholder_msg = "Silahkan isi ceritamu hari ini..."
+        
+        def on_focus_in(event):
+            current_text = self.txt_isi.get("0.0", "end-1c")
+            if current_text == placeholder_msg:
+                self.txt_isi.delete("0.0", "end")
+                self.txt_isi.configure(text_color=self.theme["text"]) # Warna teks normal (Hitam/Tema)
+
+        # Fungsi saat ditinggalkan (Kembalikan placeholder jika kosong)
+        def on_focus_out(event):
+            current_text = self.txt_isi.get("0.0", "end-1c").strip()
+            if current_text == "":
+                self.txt_isi.insert("0.0", placeholder_msg)
+                self.txt_isi.configure(text_color="grey") # Warna teks redup (Placeholder)
+
+        # Inisialisasi Awal
+        self.txt_isi.insert("0.0", placeholder_msg)
+        self.txt_isi.configure(text_color="grey")
+
+        # Pasang (Bind) Event ke Textbox
+        self.txt_isi.bind("<FocusIn>", on_focus_in)
+        self.txt_isi.bind("<FocusOut>", on_focus_out)
 
         # --- E. Tombol Simpan ---
-        ctk.CTkButton(card, text="SIMPAN TULISAN", command=self.simpan_jurnal_action, 
+        ctk.CTkButton(card, text="SIMPAN TULISAN", command=self.simpan_jurnal_action, text_color="white",
                       font=("Century Gothic", 13, "bold"), height=45, width=200, corner_radius=20,
-                      fg_color=self.theme["text"], hover_color=self.theme["btn_hover"]).pack(anchor="e", padx=20, pady=(0, 20))
+                      fg_color=self.theme["btn_hover"], hover_color=self.theme["btn"]).pack(anchor="e", padx=20, pady=(0, 20))
 
     def simpan_jurnal_action(self ):
-        if not self.txt_isi.get("1.0", "end").strip(): return messagebox.showwarning("Info", "Isi kosong!")
-        if self.var_rating.get() == 0: return messagebox.showwarning("Info", "Beri rating dulu!")
-    
+        isi_raw = self.txt_isi.get("1.0", "end").strip()
+        placeholder_msg = "Silahkan isi ceritamu hari ini..." # Harus sama persis
+
+        # Validasi: Jika kosong ATAU masih berisi placeholder -> Tolak
+        if not isi_raw or isi_raw == placeholder_msg: 
+            return messagebox.showwarning("Info", "Isi jurnal tidak boleh kosong.")
+        
+        if self.var_rating.get() == 0: 
+            return messagebox.showwarning("Info", "Beri rating dulu!")
         
         judul = self.ent_judul.get().strip()
-        isi = self.txt_isi.get("1.0", "end").strip()
         rating = self.var_rating.get()
         
-        # Validasi
-        # if not isi:
-        #     messagebox.showwarning("Info", "Isi jurnal tidak boleh kosong.")
-        #     return
         
-        # if rating == 0:
-        #     messagebox.showwarning("Info", "Beri rating harimu dulu!")
-        #     return
-
-        success, msg = self.logic_journal.simpan_jurnal(self.current_user_id,  judul, isi, rating)
-
-        if not success:
-            messagebox.showerror("Error", f"Terjadi kesalahan: {msg}")
-        
-        
-        self.refresh_app_state()
-        self.apply_current_theme()
-        self.show_dashboard()
+        try:
+            # Simpan ke Database
+            msg=self.logic_journal.simpan_jurnal(self.current_user_id, judul, isi_raw, rating)
+          
+            
+            self.refresh_app_state()
+            self.apply_current_theme() # Pastikan tema tetap terjaga
+            self.show_dashboard()
+            
+        except:
+            # HANYA JIKA ERROR, tampilkan pesan error
+             messagebox.showerror("Error", f"Terjadi kesalahan tak terduga:\n{msg}")
+  
 
     # ================= 8. FITUR: HABIT =================
     def show_habit(self):
         for w in self.content_area.winfo_children(): w.destroy()
         
-        # 1. Header & Tanggal
-        tgl_str = datetime.now().strftime("%A, %d %B %Y")
         header_frame = ctk.CTkFrame(self.content_area, fg_color="transparent")
         header_frame.pack(fill="x", pady=(0, 10))
         
-        ctk.CTkLabel(header_frame, text="Habit Tracker", font=("Century Gothic", 26, "bold"), text_color=self.theme["text"]).pack(side="left")
-        ctk.CTkLabel(header_frame, text=tgl_str, font=("Arial", 12, "bold"), text_color=self.theme["text"]).pack(side="right", pady=10)
-
+        date_container = ctk.CTkFrame(header_frame, fg_color="transparent")
+        date_container.pack(side="right", padx=25, pady=10)
+        
+        ctk.CTkLabel(header_frame, text="Aktivitas Harian", font=("Century Gothic", 26, "bold"), text_color=self.theme["text"]).pack(anchor="w")
+        ctk.CTkLabel(header_frame, text="Silahkan capai habit harianmu, semoga bisa terselesaikan dengan baik!", font=("Century Gothic", 14), text_color=self.theme["text"]).pack(anchor="w")
+        
+        ctk.CTkLabel(date_container, text=f"📅", font=("Segoe UI Emoji", 24), text_color=self.theme["text"]).pack(side="left", padx=(0,8), pady=(0,3))
+        
+        tgl_str = datetime.now().strftime("%A, %d %B %Y")
+        ctk.CTkLabel(date_container, text=tgl_str, font=("Arial", 12, "bold"), text_color=self.theme["text"]).pack(side="right", pady=10)
         # Ambil Data Habit
         habits = self.logic_habit.get_habits_harian(self.current_user_id)
         
@@ -611,11 +724,19 @@ class ZenMoodApp(ctk.CTk):
 
         def get_icon(nama):
             n = nama.lower()
-            if "air" in n or "minum" in n: return "💧"
+            if "susu" in n: return "🥛"       # Cek Susu dulu sebelum Minum biasa
+            if "sayur" in n: return "🥗"      # Cek Sayur dulu sebelum Makan biasa
+            if "buah" in n: return "🍎"       # Cek Buah
+            if "air" in n: return "💧"        # Cek Air
+            
+            # --- CEK YANG UMUM ---
+            if "minum" in n: return "💧"      # Default minum (selain susu)
+            if "makan" in n: return "🍽️"      # Default makan (selain sayur/buah)
+            
+            # --- CEK YANG LAIN ---
             if "tidur" in n or "bangun" in n: return "🛌"
             if "buku" in n or "baca" in n or "belajar" in n: return "📚"
-            if "lari" in n or "jalan" in n or "gym" in n or "olahraga" in n: return "🏃"
-            if "makan" in n or "buah" in n or "sayur" in n or "diet" in n: return "🍎"
+            if "lari" in n or "jalan" in n or "gym" in n or "olahraga" in n or "jogging" in n: return "🏃"
             if "sosmed" in n or "hp" in n or "screen" in n or "fokus" in n: return "📵"
             if "skin" in n or "wajah" in n or "masker" in n or "rawat" in n: return "🧖"
             return "✨"
@@ -623,28 +744,22 @@ class ZenMoodApp(ctk.CTk):
         for h in habits:
             h_id, nama, target, status = h
             
-            # Warna kartu: Putih jika belum, Hijau tipis jika selesai
-            # Menggunakan kode hex manual untuk hijau tipis agar netral
             card_color = "#E8F5E9" if status == 1 else self.theme["card"]
             
-            row = ctk.CTkFrame(scroll_frame, fg_color=card_color, corner_radius=15, border_width=1, border_color="#DDD")
+            row = ctk.CTkFrame(scroll_frame, fg_color=card_color, corner_radius=15, border_width=2, border_color=self.theme["btn"])
             row.pack(fill="x", pady=5, ipady=5)
             
             # Ikon
-            ctk.CTkLabel(row, text=get_icon(nama), font=("Arial", 24)).pack(side="left", padx=(20, 10))
+            ctk.CTkLabel(row, text=get_icon(nama), font=("Arial", 24), text_color=self.theme["text"]).pack(side="left", padx=(20, 10))
             
-            # Info (Nama & Target)
             info_box = ctk.CTkFrame(row, fg_color="transparent")
             info_box.pack(side="left", fill="both", expand=True, pady=10)
             
-            # [PERBAIKAN FONT] Hapus "overstrike" agar tidak dicoret
-            # Font tetap Bold baik sudah selesai atau belum agar terbaca jelas
             font_nama = ("Arial", 14, "bold") 
             
-            # Warna teks jadi abu-abu jika selesai, hitam jika belum (pembeda visual pengganti coretan)
-            text_col = "#333" if status == 0 else "grey"
+            # text_col = "#333" if status == 0 else "grey"
             
-            ctk.CTkLabel(info_box, text=nama, font=font_nama, text_color=text_col).pack(anchor="w")
+            ctk.CTkLabel(info_box, text=nama, font=font_nama, text_color=self.theme["text"]).pack(anchor="w")
             ctk.CTkLabel(info_box, text=f"Target: {target}", font=("Arial", 12), text_color=self.theme["text"]).pack(anchor="w")
 
             # --- CHECKBOX LOGIC ---
@@ -656,9 +771,9 @@ class ZenMoodApp(ctk.CTk):
 
             var = ctk.IntVar(value=status)
             
-            cb = ctk.CTkCheckBox(row, text="Selesai", variable=var, onvalue=1, offvalue=0,
+            cb = ctk.CTkCheckBox(row, text="Selesai", text_color=self.theme["text"], variable=var, onvalue=1, offvalue=0,
                                  command=lambda i=h_id, v=var: on_check(i, v),
-                                 font=("Arial", 12, "bold"), 
+                                 font=("Arial", 12, "bold"), border_color=self.theme["text"],
                                  fg_color=self.theme["btn"], hover_color=self.theme["btn_hover"],
                                  checkmark_color="white")
             cb.pack(side="right", padx=20)
