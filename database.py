@@ -1,6 +1,24 @@
 import sqlite3
 from datetime import datetime
 
+
+
+class UserAuth:
+    def __init__(self, username, password):
+        self.__username = username
+        self.__password = password
+
+    def get_username(self):
+        return self.__username
+
+    def get_password(self):
+        return self.__password
+
+    def set_password(self, new_password):
+        if len(new_password) < 3:
+            raise ValueError("Password terlalu pendek! Minimal 3 karakter.")
+        self.__password = new_password
+
 class DatabaseManager:
     def __init__(self, db_name="serinity_fix.db"):
         self.conn = sqlite3.connect(db_name)
@@ -32,6 +50,27 @@ class DatabaseManager:
         
         self.conn.commit()
         
+        
+    def registrasi_user(self, username, password):
+     
+        try:
+            
+            akun_baru = UserAuth(username, password)
+            username = akun_baru.get_username()
+            password = akun_baru.get_password()
+            
+            self.cursor.execute("SELECT id_user FROM master_user WHERE username = ?", (username,))
+            if self.cursor.fetchone():
+                return False, "Username sudah digunakan, cari yang lain!"
+
+            self.cursor.execute("INSERT INTO master_user (username, password) VALUES (?, ?)", (username, password))
+            self.conn.commit()
+            
+            return True, "Registrasi berhasil! Silakan login."
+            
+        except Exception as e:
+            return False, f"Terjadi kesalahan database: {str(e)}"
+        
     def seed_users(self):
         users = [
             ("n", "1"),
@@ -53,11 +92,25 @@ class DatabaseManager:
         self.conn.commit()
         
     def check_login(self, username, password):
-        self.cursor.execute(
-            "SELECT id_user FROM master_user WHERE username=? AND password=?",
-            (username, password)
-        )
-        return self.cursor.fetchone()
+        
+        try:
+            
+            auth_data = UserAuth(username, password)
+            username = auth_data.get_username()
+            password = auth_data.get_password()
+            
+            self.cursor.execute(
+                "SELECT id_user FROM master_user WHERE username=? AND password=?",
+                (username, password)
+            )
+            res= self.cursor.fetchone()
+            if res:
+                return True, res[0] 
+            else:
+                return False, "Username atau Password salah!"
+                
+        except Exception as e:
+            return False, str(e)
 
     def seed_master_data(self):
         self.cursor.execute("SELECT count(*) FROM master_emosi")
@@ -78,10 +131,10 @@ class DatabaseManager:
             templates = [
                 ('Apa yang kamu syukuri hari ini?',), 
                 ('Apa hal berat yang berhasil kamu lewati?',), 
-                ('Bagaimana perasaanmu saat bangun tidur?',),  # <--- Dulu lupa koma disini
+                ('Bagaimana perasaanmu saat bangun tidur?',), 
                 ('Ceritakan momen menyenangkan yang kamu alami hari ini.',),
                 ('Apa tantangan terbesar yang kamu hadapi hari ini?',), 
-                ('Siapa orang yang membuat harimu lebih baik?',), # <--- Dulu lupa koma disini
+                ('Siapa orang yang membuat harimu lebih baik?',), 
                 ('Apa hal kecil yang membuatmu tersenyum hari ini?',), 
                 ('Bagaimana kamu merawat dirimu sendiri hari ini?',),
                 ('Apa tujuan utama yang ingin kamu capai minggu ini?',), 
@@ -96,7 +149,6 @@ class DatabaseManager:
             self.cursor.executemany("INSERT INTO master_template (pertanyaan) VALUES (?)", templates)
 
             quotes = [
-                # Support (Untuk Baterai < 40%)
                 ('Tidak apa-apa untuk istirahat sejenak. Dunia bisa menunggu.', 'ZenMood', 'support'),
                 ('Menangis itu valid. Keluarkan saja.', 'ZenMood', 'support'),
                 ('Kamu lebih kuat dari yang kamu kira, tapi sekarang waktunya pulih.', 'ZenMood', 'support'),
@@ -109,7 +161,6 @@ class DatabaseManager:
                 ('Diam juga bentuk bertahan hidup.', 'ZenMood', 'support'),
                 ('Hari ini kamu boleh nggak punya jawaban.', 'ZenMood', 'support'),
 
-                # Motivasi (Untuk Baterai 40% - 70%)
                 ('Satu langkah kecil tetaplah langkah maju.', 'Serinity', 'motivasi'),
                 ('Fokus pada apa yang bisa kamu kendalikan.', 'Serinity', 'motivasi'),
                 ('Kesulitan hari ini adalah kekuatan di masa depan.', 'Serinity', 'motivasi'),
@@ -122,7 +173,6 @@ class DatabaseManager:
                 ('Hari ini mungkin biasa, tapi kamu tetap hadir.', 'Serinity', 'motivasi'),
                 ('Kamu belajar, bahkan saat merasa tersesat.', 'Serinity', 'motivasi'),
 
-                # Apresiasi (Untuk Baterai > 70%)
                 ('Pertahankan energimu, kamu melakukan hal hebat!', 'Stain', 'apresiasi'),
                 ('Jangan lupa berbagi senyum hari ini.', 'Stain', 'apresiasi'),
                 ('Nikmati momen ini, kamu pantas mendapatkannya.', 'Stain', 'apresiasi'),
@@ -144,16 +194,16 @@ class FiturKesehatan:
         self.db_manager = DatabaseManager()
         self.conn = self.db_manager.conn
         self.cursor = self.db_manager.cursor
-
+        
+    def generate_laporan_harian(self, id_user):
+        raise NotImplementedError("Method ini harus di-override oleh child class")
+        
+  
 class MoodTracker(FiturKesehatan):
     def get_daftar_emosi(self):
         self.cursor.execute("SELECT * FROM master_emosi")
         return self.cursor.fetchall()
     
-    # def get_daftar_aktivitas(self):
-    #     self.cursor.execute("SELECT * FROM master_aktivitas")
-    #     return self.cursor.fetchall()
-
     def simpan_mood(self, id_user, id_emosi, note_aktivitas):
         tgl = datetime.now().strftime("%Y-%m-%d")
         jam = datetime.now().strftime("%H:%M")
@@ -164,6 +214,23 @@ class MoodTracker(FiturKesehatan):
             return "Mood berhasil dicatat!"
         except Exception as e: 
             return str(e)
+        
+    def generate_laporan_harian(self, id_user):
+        tgl = datetime.now().strftime("%Y-%m-%d")
+        self.cursor.execute("""
+            SELECT m.nama, t.aktivitas_note 
+            FROM trans_mood t 
+            JOIN master_emosi m ON t.id_emosi = m.id_emosi 
+            WHERE t.tanggal=? AND t.id_user=?
+            ORDER BY t.id DESC 
+            LIMIT 1""", (tgl, id_user))
+        data = self.cursor.fetchone()
+        
+        if data:
+            return f"🙂 Mood: kamu merasa ({data[0]}), alasan: {data[1]}"
+        else:
+            return "🙂 Mood: Data mood hari ini kosong."
+    
 
 class SmartJournal(FiturKesehatan):
     def get_prompt_acak(self):
@@ -200,30 +267,21 @@ class SmartJournal(FiturKesehatan):
         """Simpan jurnal dengan rating user opsional"""
         tgl = datetime.now().strftime("%Y-%m-%d")
         
-        
-        
-        # 1. Analisis sentimen otomatis (skor AI)
         skor_ai = self.analisis_sentimen_sederhana(isi)
-        
-        # 2. Jika ada rating user, konversi dari skala 1-5 ke -5 sampai +5
+
         if rating_user and 1 <= rating_user <= 5:
-            # Konversi: 1 -> -5, 3 -> 0, 5 -> +5
             skor_user = (rating_user - 3) * 2.5
-            # Gabungkan skor AI dan rating user (rata-rata)
             skor_final = (skor_ai + skor_user) / 2
         else:
             skor_final = skor_ai
         
-        # 3. Simpan ke database (termasuk rating_user jika ada)
         self.cursor.execute("""
             INSERT INTO trans_jurnal (id_user, tanggal, judul, isi_teks, skor_analisis, rating_user) 
             VALUES (?, ?, ?, ?, ?, ?)
         """, (id_user, tgl, judul, isi, skor_final, rating_user))
         
         self.conn.commit()
-    
-        
-        # # 4. Return pesan sukses
+
         if rating_user:
             return f"Jurnal tersimpan! "
         else:
@@ -234,6 +292,22 @@ class SmartJournal(FiturKesehatan):
         self.cursor.execute("SELECT judul, isi_teks FROM trans_jurnal WHERE tanggal=? AND id_user=? ORDER BY id DESC", 
                            (tgl, id_user))
         return self.cursor.fetchall()
+    
+    def generate_laporan_harian(self, id_user):
+        tgl = datetime.now().strftime("%Y-%m-%d")
+        self.cursor.execute("""SELECT judul FROM trans_jurnal 
+            WHERE tanggal=? AND id_user=? 
+            ORDER BY id DESC""", (tgl, id_user))
+        data = self.cursor.fetchall()
+        
+        if data:
+            jumlah = len(data)
+            judul_terakhir = data[0][0]
+            return f"📝 Jurnal: kamu menulis {jumlah} catatan hari ini. Terakhir: ({judul_terakhir})"
+        else:
+            return "📝 Jurnal: Belum ada cerita hari ini."
+    
+
 
 class HabitManager(FiturKesehatan):
     def get_habits_harian(self, id_user):
@@ -260,6 +334,17 @@ class HabitManager(FiturKesehatan):
             self.cursor.execute("INSERT INTO trans_habit (id_user, tanggal, id_habit, status) VALUES (?,?,?,?)", 
                                (id_user, tgl, id_habit, nilai_baru))
         self.conn.commit()
+        
+    def generate_laporan_harian(self, id_user):
+        habits = self.get_habits_harian(id_user)
+        
+        if not habits:
+            return "[Habit] Tidak ada target habit."
+            
+        done = sum([1 for h in habits if h[3] == 1]) 
+        total = len(habits)
+        return f"✅ Habit: Kamu menyelesaikan {done} dari {total} target selesai."   
+        
 
 class AnalyticsDashboard(FiturKesehatan):
     def get_contextual_quote(self, battery_level):
@@ -291,7 +376,6 @@ class AnalyticsDashboard(FiturKesehatan):
     def hitung_mental_battery(self, id_user):
         tgl = datetime.now().strftime("%Y-%m-%d")
         
-        # 1. Rata-rata Mood
         self.cursor.execute("""
             SELECT AVG(m.skor) FROM trans_mood t 
             JOIN master_emosi m ON t.id_emosi = m.id_emosi 
@@ -299,7 +383,6 @@ class AnalyticsDashboard(FiturKesehatan):
         res_mood = self.cursor.fetchone()[0]
         score_mood = res_mood if res_mood is not None else None
         
-        # 2. Rata-rata Jurnal
         self.cursor.execute("SELECT skor_analisis, rating_user FROM trans_jurnal WHERE tanggal = ? AND id_user = ?", 
                            (tgl, id_user))
         jurnal_data = self.cursor.fetchall()
@@ -318,7 +401,6 @@ class AnalyticsDashboard(FiturKesehatan):
         else:
             score_jurnal = None
         
-        # 3. Habit
         habits = self.get_habits_harian(id_user)
         
         score_habit = None
@@ -331,7 +413,6 @@ class AnalyticsDashboard(FiturKesehatan):
                 persen = done_habit / total_habit
                 score_habit = (persen * 10) - 5
 
-        # --- LOGIKA PENENTUAN 0% ---
         if (score_mood is None and score_jurnal is None and score_habit is None):
             return 0 
         
@@ -350,3 +431,8 @@ class AnalyticsDashboard(FiturKesehatan):
         baterai = (avg_total + 5) * 10 
         
         return int(max(min(baterai, 100), 0))
+    
+    
+    def generate_laporan_harian(self, id_user):
+        bat = self.hitung_mental_battery(id_user)
+        return f"🔋 Baterai: Baterai mentalmu saat ini sebesar {bat}%"
