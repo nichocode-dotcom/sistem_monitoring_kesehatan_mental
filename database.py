@@ -1,8 +1,6 @@
 import sqlite3
 from datetime import datetime
 
-
-
 class UserAuth:
     def __init__(self, username, password):
         self.__username = username
@@ -119,10 +117,6 @@ class DatabaseManager:
                      ('Cemas/Gelisah', '😟', -3), ('Sangat Sedih', '😭', -5), ('Marah', '😡', -4)]
             self.cursor.executemany("INSERT INTO master_emosi (nama, ikon, skor) VALUES (?,?,?)", emosi)
 
-            # aktivitas = [('Tidur Cukup', 'Fisik'), ('Olahraga', 'Fisik'), ('Tugas Kuliah', 'Kerja'), 
-            #              ('Main Sosmed', 'Hiburan'), ('Bertengkar', 'Sosial'), ('Jalan-jalan', 'Hiburan')]
-            # self.cursor.executemany("INSERT INTO master_aktivitas (nama, kategori) VALUES (?,?)", aktivitas)
-
             habits = [('Minum Air 2L', '2 Liter'), ('Meditasi', '10 Menit'), ('Waktu Tidur', '7-8 Jam'), 
                      ('Baca Buku', '15 Menit'), ('Jogging Pagi', '30 Menit'),
                      ('Makan Buah', '1 Porsi'), ('Makan Sayur', '1 Porsi'), ('Minum Susu', '1-2 Gelas'), ('No Sosmed', '1 Jam'), ('Skincare', 'Malam')]
@@ -189,17 +183,21 @@ class DatabaseManager:
             self.cursor.executemany("INSERT INTO master_quotes (isi, penulis, kategori) VALUES (?,?,?)", quotes)
             self.conn.commit()
 
+# Paret class untuk penerapan Inheritance
+
 class FiturKesehatan:
     def __init__(self):
         self.db_manager = DatabaseManager()
         self.conn = self.db_manager.conn
         self.cursor = self.db_manager.cursor
         
-    def generate_laporan_harian(self, id_user):
+    def generate_laporan_harian(self, id_user): # Abstract Method
         raise NotImplementedError("Method ini harus di-override oleh child class")
+    
+# End Parent class
         
   
-class MoodTracker(FiturKesehatan):
+class MoodTracker(FiturKesehatan): # Menerapkan Inheritance dari FiturKesehatan
     def get_daftar_emosi(self):
         self.cursor.execute("SELECT * FROM master_emosi")
         return self.cursor.fetchall()
@@ -215,7 +213,7 @@ class MoodTracker(FiturKesehatan):
         except Exception as e: 
             return str(e)
         
-    def generate_laporan_harian(self, id_user):
+    def generate_laporan_harian(self, id_user): # Konsep polimorfisme (Banyak bentuk namun memiliki prilaku yang berbeda), override method dari parent class
         tgl = datetime.now().strftime("%Y-%m-%d")
         self.cursor.execute("""
             SELECT m.nama, t.aktivitas_note 
@@ -307,8 +305,6 @@ class SmartJournal(FiturKesehatan):
         else:
             return "📝 Jurnal: Belum ada cerita hari ini."
     
-
-
 class HabitManager(FiturKesehatan):
     def get_habits_harian(self, id_user):
         self.cursor.execute("SELECT * FROM master_habit")
@@ -344,7 +340,11 @@ class HabitManager(FiturKesehatan):
         done = sum([1 for h in habits if h[3] == 1]) 
         total = len(habits)
         return f"✅ Habit: Kamu menyelesaikan {done} dari {total} target selesai."   
-        
+
+# Bateri kesehatan mental dari sisi user, diambil dari 3 komponen berikut; 
+# Skor mood 
+# Skor jurnal 
+# Persentase habit yang dikerjakan.
 
 class AnalyticsDashboard(FiturKesehatan):
     def get_contextual_quote(self, battery_level):
@@ -391,7 +391,7 @@ class AnalyticsDashboard(FiturKesehatan):
             total_skor = 0
             for skor_ai, rating_user in jurnal_data:
                 if rating_user is not None and 1 <= rating_user <= 5:
-                    skor_user = (rating_user - 3) * 2.5
+                    skor_user = (rating_user - 3) * 2.5 # Perhitungan journal, 3 merupakan angka netral dan 2.5 digunakan untuk pelebaran skala agar bisa mencapai -5 dan +5.
                     skor_jurnal = (skor_ai + skor_user) / 2
                 else:
                     skor_jurnal = skor_ai
@@ -400,9 +400,7 @@ class AnalyticsDashboard(FiturKesehatan):
             score_jurnal = total_skor / len(jurnal_data)
         else:
             score_jurnal = None
-        
         habits = self.get_habits_harian(id_user)
-        
         score_habit = None
         
         if habits:
@@ -411,7 +409,7 @@ class AnalyticsDashboard(FiturKesehatan):
             
             if total_habit > 0:
                 persen = done_habit / total_habit
-                score_habit = (persen * 10) - 5
+                score_habit = (persen * 10) - 5 # Perhitungan habit, 10 merupakan rentang perhitungan dan -5 digunakan untuk pergeseran ke nilai minimum (-5)
 
         if (score_mood is None and score_jurnal is None and score_habit is None):
             return 0 
@@ -432,7 +430,12 @@ class AnalyticsDashboard(FiturKesehatan):
         
         return int(max(min(baterai, 100), 0))
     
-    
     def generate_laporan_harian(self, id_user):
         bat = self.hitung_mental_battery(id_user)
         return f"🔋 Baterai: Baterai mentalmu saat ini sebesar {bat}%"
+    
+    
+# A little Information about the System.
+
+# Sistem ini menggunakan proses perhitungan akumulasi rata-rata yang berbobot, semua konponen dianggap sama pentingnya.
+# Perhitungan baterai (avg + 5) * 10 merupakan cara untuk mengkonversi skor rata-rata (-5 sampai +5) menjadi persentase (0% sampai 100%). Karena baterai tidak mungkin minus.

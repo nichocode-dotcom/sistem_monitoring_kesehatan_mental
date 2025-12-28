@@ -56,7 +56,6 @@ class ZenMoodApp(ctk.CTk):
         
         self.show_login()
 
-# ================= HELPER =================
     def refresh_app_state(self):
         if hasattr(self, 'current_user_id') and self.current_user_id is not None:
             current_battery = self.logic_dash.hitung_mental_battery(self.current_user_id)
@@ -122,38 +121,32 @@ class ZenMoodApp(ctk.CTk):
         reg_container.place(relx=0.5, rely=0.5, anchor="center")
         reg_container.pack_propagate(False)
 
-        # KIRI: Branding
         left_brand_frame = ctk.CTkFrame(reg_container, fg_color=self.theme["sidebar"], corner_radius=0, width=400)
         left_brand_frame.pack(side="left", fill="y")
         left_brand_frame.pack_propagate(False)
         ctk.CTkFrame(left_brand_frame, fg_color=self.theme["sidebar"], width=50, corner_radius=0).pack(side="right", fill="y")
         ctk.CTkLabel(left_brand_frame, text="ZENMOOD🌿\nJOIN\nOUR\nJOURNEY", font=("Century Gothic", 35, "bold"), text_color="white", justify="left").place(relx=0.1, rely=0.3)
-        ctk.CTkLabel(left_brand_frame, text="Mulai langkah sehatmu hari ini.", font=("Century Gothic", 14), text_color="white").place(relx=0.1, rely=0.6)
+        ctk.CTkLabel(left_brand_frame, text="Mulai langkah sehatmu hari ini", font=("Century Gothic", 14), text_color="white").place(relx=0.1, rely=0.6)
 
-        # KANAN: Form Registrasi
         right_form_frame = ctk.CTkFrame(reg_container, fg_color="white", corner_radius=0)
         right_form_frame.pack(side="right", fill="both", expand=True)
 
         ctk.CTkLabel(right_form_frame, text="Buat Akun Baru", font=("Century Gothic", 28, "bold"), text_color=self.theme["text"]).pack(pady=(60, 5), padx=100, anchor="w")
         ctk.CTkLabel(right_form_frame, text="Lengkapi data diri anda", font=("Century Gothic", 13), text_color=self.theme["text"]).pack(pady=(0, 10), padx=100, anchor="w")
         
-        # 1. USERNAME
         ctk.CTkLabel(right_form_frame, text="USERNAME", font=("Arial", 10, "bold"), text_color=self.theme["text"]).pack(padx=100, anchor="w")
         self.ent_reg_user = ctk.CTkEntry(right_form_frame, width=350, height=40, corner_radius=20, 
                                          fg_color="#F2F4F4", text_color="black", border_width=1, border_color="#cbd5e0")
         self.ent_reg_user.pack(pady=(5, 15), padx=100, anchor="w")
 
-        # --- LOGIKA TOGGLE PASSWORD (REUSABLE) ---
         def toggle_eye(entry_widget, btn_widget):
-            # Cek status saat ini berdasarkan ikon tombol
-            if btn_widget.cget("text") == "◉": # Jika sedang tertutup
-                entry_widget.configure(show="") # Buka
-                btn_widget.configure(text="○")  # Ganti ikon jadi terbuka
+            if btn_widget.cget("text") == "◉": 
+                entry_widget.configure(show="") 
+                btn_widget.configure(text="○")  
             else:
-                entry_widget.configure(show="*") # Tutup
-                btn_widget.configure(text="◉")   # Ganti ikon jadi tertutup
+                entry_widget.configure(show="*") 
+                btn_widget.configure(text="◉")   
 
-        # 2. PASSWORD UTAMA (Dengan Mata)
         ctk.CTkLabel(right_form_frame, text="PASSWORD", font=("Arial", 10, "bold"), text_color=self.theme["text"]).pack(padx=100, anchor="w")
         
         pass_frame1 = ctk.CTkFrame(right_form_frame, fg_color="transparent", width=350, height=40)
@@ -169,7 +162,6 @@ class ZenMoodApp(ctk.CTk):
         btn_eye1.configure(command=lambda: toggle_eye(self.ent_reg_pass, btn_eye1))
         btn_eye1.place(relx=0.9, rely=0.5, anchor="center")
 
-        # 3. KONFIRMASI PASSWORD (Dengan Mata)
         ctk.CTkLabel(right_form_frame, text="KONFIRMASI PASSWORD", font=("Arial", 10, "bold"), text_color=self.theme["text"]).pack(padx=100, anchor="w")
         
         pass_frame2 = ctk.CTkFrame(right_form_frame, fg_color="transparent", width=350, height=40)
@@ -185,13 +177,11 @@ class ZenMoodApp(ctk.CTk):
         btn_eye2.configure(command=lambda: toggle_eye(self.ent_reg_confirm, btn_eye2))
         btn_eye2.place(relx=0.9, rely=0.5, anchor="center")
 
-        # Tombol Daftar
         btn_register = ctk.CTkButton(right_form_frame, text="DAFTAR SEKARANG", command=self.process_register, 
                                      fg_color=self.theme["sidebar"], hover_color=self.theme["btn_hover"], 
                                      height=40, width=350, corner_radius=20, font=("Arial", 13, "bold"))
         btn_register.pack(pady=10, padx=100, anchor="w")
 
-        # Link Kembali
         btn_back = ctk.CTkButton(right_form_frame, text="Kembali ke Login", font=("Arial", 11, "bold"), 
                                  fg_color="transparent", hover_color=self.theme["btn_hover"], 
                                  text_color=self.theme["sidebar"], command=self.show_login, width=350)
@@ -252,22 +242,17 @@ class ZenMoodApp(ctk.CTk):
                                      fg_color="#F2F4F4", text_color="black", border_width=2, border_color=self.theme["btn"])
         self.ent_user.pack(pady=(5, 20), padx=100, anchor="w")
 
-        # --- INPUT PASSWORD (FIXED LAYOUT) ---
         ctk.CTkLabel(right_form_frame, text="PASSWORD", font=("Arial", 10, "bold"), text_color=self.theme["text"]).pack(padx=100, anchor="w")
         
-        # 1. Frame Pembungkus (Wadah)
         pass_frame = ctk.CTkFrame(right_form_frame, fg_color="transparent", width=350, height=40)
         pass_frame.pack(pady=(5, 50), padx=100, anchor="w")
         pass_frame.pack_propagate(False) # Agar ukuran wadah tidak menyusut
 
-        # 2. Input Field (Mengisi Penuh Wadah)
         self.ent_pass = ctk.CTkEntry(pass_frame, width=350, height=40, corner_radius=20, show="*", 
                                      fg_color="#F2F4F4", text_color="black", border_width=2, border_color=self.theme["btn"])
-        
-        # [SOLUSI] Gunakan place agar memenuhi frame, bukan pack dengan padding besar
+
         self.ent_pass.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-        # 3. Tombol Mata (Overlay di atas Input)
         self.is_pass_visible = False
         
         def toggle_password():
@@ -284,13 +269,11 @@ class ZenMoodApp(ctk.CTk):
                                 
                                 fg_color="#F2F4F4", 
                                 
-                                # Opsional: Hover biar sedikit lebih gelap tapi tetap natural
                                 hover_color="#E0E0E0", 
                                 
                                 text_color="grey", font=("Segoe UI Emoji", 16),
                                 command=toggle_password)
         
-        # [SOLUSI] Sesuaikan posisi relx agar pas di kanan
         btn_eye.place(relx=0.9, rely=0.5, anchor="center")
         
         btn_login = ctk.CTkButton(right_form_frame, text="LOGIN", command=self.process_login, 
@@ -307,8 +290,6 @@ class ZenMoodApp(ctk.CTk):
                                 fg_color="transparent", hover_color=self.theme["btn_hover"], height=25, width=80,
                                 text_color=self.theme["text"], command=self.show_register)
         btn_reg.pack(side="left", pady=30)
-
-        # ctk.CTkLabel(right_form_frame, text="v1.0 • ZenMood Production", font=("Arial", 10), text_color=self.theme["text"]).pack(side="bottom", pady=20)
 
     def process_login(self):
         username = self.ent_user.get().strip()
@@ -331,13 +312,11 @@ class ZenMoodApp(ctk.CTk):
             self.show_login()
             return
 
-        # Kumpulkan Data Laporan
         fitur_aplikasi = [self.logic_mood, self.logic_journal, self.logic_habit, self.logic_dash]
         laporan_gabungan = ""
         
         for fitur in fitur_aplikasi:
             try:
-                # Tambahkan handling error jaga-jaga jika ada fitur yg blm siap
                 laporan_gabungan += fitur.generate_laporan_harian(self.current_user_id) + "\n\n"
             except Exception:
                 continue
@@ -345,51 +324,43 @@ class ZenMoodApp(ctk.CTk):
         self.show_report_popup(laporan_gabungan)
         
     def show_report_popup(self, isi_laporan):
-        # 1. Buat Jendela Baru (Toplevel)
         popup = ctk.CTkToplevel(self)
         popup.title("Laporan Aktivitas Harian")
         popup.geometry("550x520")
         popup.resizable(False, False)
         
-        # Agar popup muncul di tengah layar & fokus
         popup.transient(self) 
         popup.grab_set()      
-        popup.configure(fg_color=self.theme["bg"]) # Background mengikuti tema
+        popup.configure(fg_color=self.theme["bg"]) 
 
-        # 2. Buat Kartu di Dalamnya
         card = ctk.CTkFrame(popup, fg_color=self.theme["card"], corner_radius=20)
         card.pack(fill="both", expand=True, padx=20, pady=20)
 
-        # 3. Header / Judul
         ctk.CTkLabel(card, text="🌙 Laporan Aktivitas", 
                      font=("Century Gothic", 24, "bold"), 
                      text_color=self.theme["text"]).pack(pady=(25, 5))
         
-        ctk.CTkLabel(card, text="Sebelum istirahat, inilah pencapaianmu:", 
+        ctk.CTkLabel(card, text="Sebelum istirahat, inilah hasil aktivitasmu hari ini: ", 
                      font=("Arial", 12), text_color="grey").pack(pady=(0, 20))
 
-        # 4. Isi Laporan (Scrollable agar muat banyak)
         scroll_area = ctk.CTkScrollableFrame(card, fg_color="#F9F9F9", corner_radius=15)
         scroll_area.pack(fill="both", expand=True, padx=20, pady=5)
         
-        # Tampilkan teks laporan
         ctk.CTkLabel(scroll_area, text=isi_laporan, 
                      font=("Arial", 13), text_color="#555555", 
                      justify="left", wraplength=350).pack(anchor="w", padx=10, pady=10)
 
-        # 5. Fungsi Konfirmasi Logout (Saat tombol ditekan)
         def confirm_logout():
-            popup.destroy()       # Tutup popup
+            popup.destroy()       
             self.current_user = None
             self.current_user_id = None
-            self.show_login()     # Kembali ke login
+            self.show_login()     
 
-        # 6. Tombol Tutup / Logout
         ctk.CTkButton(card, text="Siap Istirahat 😴", command=confirm_logout,
-                      fg_color=self.theme["btn"], hover_color=self.theme["btn_hover"],
+                      fg_color=self.theme["btn_hover"], text_color="white", hover_color=self.theme["btn"],
                       font=("Century Gothic", 14, "bold"), 
                       height=45, corner_radius=15).pack(fill="x", padx=30, pady=25)
-
+        
 #================= SIDEBAR =================
     def setup_main_ui(self):
         self.clear_screen()
@@ -885,8 +856,6 @@ class ZenMoodApp(ctk.CTk):
                                  fg_color=self.theme["btn"], hover_color=self.theme["btn_hover"],
                                  checkmark_color="white")
             cb.pack(side="right", padx=20)
-            
-    # --- POPUP CUSTOM LAPORAN HARIAN ---
 
 if __name__ == "__main__":
     app = ZenMoodApp()
